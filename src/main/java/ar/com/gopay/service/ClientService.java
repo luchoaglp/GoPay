@@ -28,4 +28,8 @@ public class ClientService {
     public boolean existsByUsername(String username) {
         return clientRepository.existsByUsername(username);
     }
+
+    public boolean existsByDni(String dni) {
+        return clientRepository.existsByDni(dni);
+    }
 }

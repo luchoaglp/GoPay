@@ -12,4 +12,6 @@ public interface ClientRepository extends UserRepository<Client> {
     Optional<Client> findByUsername(String username);
 
     Boolean existsByUsername(String username);
+
+    Boolean existsByDni(String dni);
 }

@@ -1,5 +1,7 @@
 package ar.com.gopay.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -13,6 +15,7 @@ public class Company extends User {
     @Size(min = 6, max = 50)
     private String name;
 
+    @JsonIgnore
     private String logo;
 
     public Company() { }

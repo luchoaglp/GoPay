@@ -19,7 +19,7 @@ public class CustomAuthenticationSuccessHandler
 
         if (request.getParameter("action") != null) {
 
-            if (request.getParameter("action").equals("payment")) {
+            if (request.getParameter("action").equals("pay")) {
                 response.sendRedirect("payment-link/check");
             }
         }

@@ -1,17 +1,17 @@
 package ar.com.gopay.domain;
 
+import ar.com.gopay.domain.nosispayment.NosisClientData;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
 
 @Entity
-@Table(name = "clients")
+@Table(name = "clients", uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "dni" })
+})
 public class Client extends User {
 
     @JsonProperty("first_name")
@@ -29,8 +29,16 @@ public class Client extends User {
     private String dni;
 
     @JsonProperty("payment_links")
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(
+            mappedBy = "client",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<PaymentLink> paymentLinks;
+
+    @JsonProperty("nosis_client_data")
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private NosisClientData nosisClientData;
 
     public Client() { }
 
@@ -44,6 +52,7 @@ public class Client extends User {
 
     public void addPaymentLink(PaymentLink paymentLink) {
         paymentLinks.add(paymentLink);
+        paymentLink.setClient(this);
     }
 
     public String getFirstName() {
@@ -78,6 +87,21 @@ public class Client extends User {
         this.paymentLinks = paymentLinks;
     }
 
+    public NosisClientData getNosisClientData() {
+        return nosisClientData;
+    }
+
+    public void setNosisClientData(NosisClientData nosisClientData) {
+        if (nosisClientData == null) {
+            if (this.nosisClientData != null) {
+                this.nosisClientData.setClient(null);
+            }
+        } else {
+            nosisClientData.setClient(this);
+        }
+        this.nosisClientData = nosisClientData;
+    }
+
     @Override
     public String toString() {
         return "Client{" +
@@ -85,6 +109,7 @@ public class Client extends User {
                 ", lastName='" + lastName + '\'' +
                 ", dni='" + dni + '\'' +
                 ", paymentLinks=" + paymentLinks +
+                ", nosisClientData=" + nosisClientData +
                 ", id=" + id +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +

@@ -3,7 +3,6 @@ package ar.com.gopay.repository;
 import ar.com.gopay.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
