@@ -1,4 +1,4 @@
-package ar.com.gopay.domain.nosis.ws1;
+package ar.com.gopay.domain.nosis;
 
 public enum NombreVariable {
 

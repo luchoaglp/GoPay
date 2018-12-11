@@ -1,7 +1,7 @@
 package ar.com.gopay.service;
 
 import ar.com.gopay.domain.*;
-import ar.com.gopay.domain.nosis.ws1.*;
+import ar.com.gopay.domain.nosis.*;
 import ar.com.gopay.domain.nosispayment.NosisClientData;
 import ar.com.gopay.domain.nosispayment.NosisData;
 import ar.com.gopay.domain.nosispayment.NosisVariable;
@@ -14,7 +14,7 @@ import java.util.Date;
 import static ar.com.gopay.domain.PaymentLinkState.RE;
 import static ar.com.gopay.domain.nosispayment.NosisState.APPROVED;
 import static ar.com.gopay.domain.nosispayment.NosisState.REJECTED;
-import static ar.com.gopay.domain.nosis.ws1.NombreVariable.*;
+import static ar.com.gopay.domain.nosis.NombreVariable.*;
 
 @Service
 public class NosisPaymentVariableService {
@@ -22,7 +22,7 @@ public class NosisPaymentVariableService {
     @Autowired
     private NosisPaymentVariableRepository nosisPaymentVariableRepository;
 
-    public boolean processVariables(Client client, PaymentLink paymentLink, Nosis nosis, double amount) {
+    public boolean validateNosisData(Client client, PaymentLink paymentLink, Nosis nosis, double amount) {
 
         Resultado resultado = nosis.getContenido().getResultado();
         Datos datos = nosis.getContenido().getDatos();
@@ -144,8 +144,6 @@ public class NosisPaymentVariableService {
                 ? APPROVED
                 : REJECTED);
 
-        //paymentLink.addNosisData(nosisData);
-
         return nosisData;
     }
 
@@ -165,8 +163,6 @@ public class NosisPaymentVariableService {
         nosisData.setState((value >= nosisVariable.getMin() && value <= nosisVariable.getMax())
                 ? APPROVED
                 : REJECTED);
-
-        //paymentLink.addNosisData(nosisData);
 
         return nosisData;
     }

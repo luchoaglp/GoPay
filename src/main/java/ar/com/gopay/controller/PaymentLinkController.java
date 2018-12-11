@@ -2,13 +2,11 @@ package ar.com.gopay.controller;
 
 import ar.com.gopay.domain.Client;
 import ar.com.gopay.domain.PaymentLink;
-import ar.com.gopay.domain.nosis.ws1.Nosis;
+import ar.com.gopay.domain.Sms;
+import ar.com.gopay.domain.nosis.Nosis;
 import ar.com.gopay.exception.PaymentLinkException;
 import ar.com.gopay.security.UserPrincipal;
-import ar.com.gopay.service.ClientService;
-import ar.com.gopay.service.NosisPaymentVariableService;
-import ar.com.gopay.service.NosisService;
-import ar.com.gopay.service.PaymentLinkService;
+import ar.com.gopay.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,6 +43,9 @@ public class PaymentLinkController {
 
     @Autowired
     private NosisPaymentVariableService nosisPaymentVariableService;
+
+    @Autowired
+    private NosisSmsService nosisSmsService;
 
 
     @GetMapping("/{linkId}/{token}")
@@ -97,9 +98,21 @@ public class PaymentLinkController {
 
         if(paymentLink.getClient() == null) {
 
+            model.put("phone", client.getPhone());
+            model.put("sms", new Sms());
+
             Nosis nosis = nosisService.getNosisByClient(client);
 
-            boolean isValidTransaction = nosisPaymentVariableService.processVariables(client, paymentLink, nosis, paymentLink.getAmount());
+            boolean isValidNosisData = nosisPaymentVariableService.validateNosisData(client, paymentLink, nosis, paymentLink.getAmount());
+
+            boolean isValidNosisSms = false;
+
+            if(isValidNosisData) {
+
+                Nosis nosisWs2 = nosisService.validation(client);
+
+                isValidNosisSms = nosisSmsService.validateNosisSms(paymentLink, nosisWs2);
+            }
 
             client.addPaymentLink(paymentLink);
 
@@ -107,7 +120,7 @@ public class PaymentLinkController {
             // If the transaction is rejected, it changes state to RE
             clientService.save(client);
 
-            if(!isValidTransaction) {
+            if(!isValidNosisData || !isValidNosisSms) {
 
                 session.removeAttribute("linkId");
                 session.removeAttribute("token");
@@ -120,10 +133,45 @@ public class PaymentLinkController {
             // The link belongs to the Client, and the transaction is pending
         } else if(paymentLink.getClient().getId().equals(user.getId())) {
 
+            // TODO: previous PIN
+
+            model.put("phone", client.getPhone());
+            model.put("sms", new Sms());
+
             return "payment/check";
         }
 
         throw new PaymentLinkException("Operación inválida");
+    }
+
+    @PostMapping("/validation")
+    public String validation(@Valid Sms sms,
+                             BindingResult result,
+                             ModelMap model,
+                             HttpSession session,
+                             Principal principal) {
+
+        if(principal == null) {
+            throw new PaymentLinkException("No tiene operaciones pendientes");
+        }
+
+        PaymentLinkHelper paymentLinkHelper = getSessionPaymentLink(session);
+        PaymentLink paymentLink = paymentLinkService.getById(paymentLinkHelper.getId());
+
+        if(paymentLink.getClient() == null) {
+            throw new PaymentLinkException("No tiene operaciones pendientes");
+        }
+
+        validatePaymentLink(paymentLink, paymentLinkHelper.getToken());
+
+        model.put("paymentLink", paymentLink);
+
+        if(result.hasErrors()) {
+
+            return "payment/check";
+        }
+
+        return null;
     }
 
     @GetMapping("/signin")
@@ -147,9 +195,7 @@ public class PaymentLinkController {
 
     @PostMapping("/signup")
     public String signup(@Valid Client client,
-                         BindingResult result,
-                         ModelMap model,
-                         HttpSession session) {
+                         BindingResult result) {
 
         if(result.hasErrors()) {
 

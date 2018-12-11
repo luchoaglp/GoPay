@@ -1,6 +1,7 @@
 package ar.com.gopay.domain;
 
 import ar.com.gopay.domain.nosispayment.NosisData;
+import ar.com.gopay.domain.nosispayment.NosisSmsData;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -58,6 +59,10 @@ public class PaymentLink {
             orphanRemoval = true
     )
     private List<NosisData> nosisData;
+
+    @JsonProperty("nosis_sms_data")
+    @OneToOne(mappedBy = "paymentLink", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private NosisSmsData nosisSmsData;
 
     @JsonProperty("created_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT-03:00")
@@ -184,5 +189,20 @@ public class PaymentLink {
 
     public void setState(PaymentLinkState state) {
         this.state = state;
+    }
+
+    public NosisSmsData getNosisSmsData() {
+        return nosisSmsData;
+    }
+
+    public void setNosisSmsData(NosisSmsData nosisSmsData) {
+        if (nosisSmsData == null) {
+            if (this.nosisSmsData != null) {
+                this.nosisSmsData.setPaymentLink(null);
+            }
+        } else {
+            nosisSmsData.setPaymentLink(this);
+        }
+        this.nosisSmsData = nosisSmsData;
     }
 }

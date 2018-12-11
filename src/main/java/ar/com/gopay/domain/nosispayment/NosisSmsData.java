@@ -1,6 +1,6 @@
 package ar.com.gopay.domain.nosispayment;
 
-import ar.com.gopay.domain.Client;
+import ar.com.gopay.domain.PaymentLink;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,17 +10,12 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "nosis_clients_data")
-public class NosisClientData {
+@Table(name = "nosis_sms_data")
+public class NosisSmsData {
 
     @Id
     @GeneratedValue
     private Long id;
-
-    private String names;
-
-    @JsonProperty("last_name")
-    private String lastName;
 
     @JsonProperty("server_state")
     private Integer serverState;
@@ -28,7 +23,14 @@ public class NosisClientData {
     @JsonProperty("server_detail")
     private String serverDetail;
 
-    private NosisState state;
+    @JsonProperty("sms_state")
+    private String smsState;
+
+    @JsonProperty("sms_detail")
+    private String smsDetail;
+
+    @JsonProperty("sms_tx")
+    private String smsTx;
 
     @JsonProperty("last_modified_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT-03:00")
@@ -38,9 +40,9 @@ public class NosisClientData {
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id")
-    private Client client;
+    private PaymentLink paymentLink;
 
-    public NosisClientData() {
+    public NosisSmsData() {
         this.lastModifiedDate = new Date();
     }
 
@@ -50,22 +52,6 @@ public class NosisClientData {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getNames() {
-        return names;
-    }
-
-    public void setNames(String names) {
-        this.names = names;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public Integer getServerState() {
@@ -84,6 +70,30 @@ public class NosisClientData {
         this.serverDetail = serverDetail;
     }
 
+    public String getSmsState() {
+        return smsState;
+    }
+
+    public void setSmsState(String smsState) {
+        this.smsState = smsState;
+    }
+
+    public String getSmsDetail() {
+        return smsDetail;
+    }
+
+    public void setSmsDetail(String smsDetail) {
+        this.smsDetail = smsDetail;
+    }
+
+    public PaymentLink getPaymentLink() {
+        return paymentLink;
+    }
+
+    public void setPaymentLink(PaymentLink paymentLink) {
+        this.paymentLink = paymentLink;
+    }
+
     public Date getLastModifiedDate() {
         return lastModifiedDate;
     }
@@ -92,30 +102,23 @@ public class NosisClientData {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public Client getClient() {
-        return client;
+    public String getSmsTx() {
+        return smsTx;
     }
 
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    public NosisState getState() {
-        return state;
-    }
-
-    public void setState(NosisState state) {
-        this.state = state;
+    public void setSmsTx(String smsTx) {
+        this.smsTx = smsTx;
     }
 
     @Override
     public String toString() {
-        return "NosisClientData{" +
+        return "NosisSmsData{" +
                 "id=" + id +
-                ", names='" + names + '\'' +
-                ", lastName='" + lastName + '\'' +
                 ", serverState=" + serverState +
                 ", serverDetail='" + serverDetail + '\'' +
+                ", smsState='" + smsState + '\'' +
+                ", smsDetail='" + smsDetail + '\'' +
+                ", smsTx='" + smsTx + '\'' +
                 ", lastModifiedDate=" + lastModifiedDate +
                 '}';
     }

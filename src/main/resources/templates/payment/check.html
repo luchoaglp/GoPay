@@ -38,12 +38,17 @@
                         <h5 class="my-0 font-weight-normal">Transacción aprobada</h5>
                     </div>
                     <div class="card-body">
-                        <form action="#" method="post">
+                        <form th:action="@{/payment-link/validation}" th:object="${sms}" method="post">
+                            <p class="card-text">
+                                Se te ha enviado un PIN al <b><span th:text="${phone}" class="text-info"></span></b>,
+                                ingresalo para completar la operación.
+                            </p>
                             <div class="form-group">
                                 <label for="pin">PIN</label>
-                                <input type="text" class="form-control" name="pin" id="pin" placeholder="" autofocus required>
+                                <input type="text" class="form-control" th:errorclass="is-invalid" th:field="*{pin}" id="pin" placeholder="Ingrese el PIN" autofocus required>
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('pin')}" th:errors="*{pin}"></div>
                             </div>
-                            <button type="button" class="btn btn-lg btn-block btn-outline-primary">Verificar</button>
+                            <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Verificar</button>
                         </form>
                     </div>
                 </div>

@@ -1,11 +1,15 @@
 package ar.com.gopay.service;
 
 import ar.com.gopay.domain.Client;
-import ar.com.gopay.domain.nosis.ws1.Nosis;
+import ar.com.gopay.domain.nosis.Nosis;
+import ar.com.gopay.domain.nosispayment.NosisSmsData;
 import ar.com.gopay.exception.RestTemplateResponseErrorHandler;
+import ar.com.gopay.payload.NosisEvaluationRequest;
+import ar.com.gopay.payload.NosisValidationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -25,6 +29,9 @@ public class NosisService {
     @Value("${nosis.ws1}")
     private String nosisWs1;
 
+    @Value("${nosis.ws2}")
+    private String nosisWs2;
+
     public Nosis getNosisByClient(Client client) {
 
         RestTemplate restTemplate = builder
@@ -43,5 +50,44 @@ public class NosisService {
         return restTemplate.exchange(nosisUrl.toString(),
                 HttpMethod.GET, null,
                 Nosis.class).getBody();
+    }
+
+    public Nosis validation(Client client) {
+
+        RestTemplate restTemplate = builder
+                .errorHandler(new RestTemplateResponseErrorHandler())
+                .build();
+
+        HttpEntity<NosisValidationRequest> request = new HttpEntity<>(
+                new NosisValidationRequest(
+                        nosisUser,
+                        nosisToken,
+                        client.getDni(),
+                        client.getPhone()
+                )
+        );
+
+        return restTemplate.exchange(nosisWs2 + "/validacion",
+                HttpMethod.POST, request, Nosis.class)
+                .getBody();
+    }
+
+    public Nosis evaluation(NosisSmsData nosisSmsData) {
+
+        RestTemplate restTemplate = builder
+                .errorHandler(new RestTemplateResponseErrorHandler())
+                .build();
+
+        HttpEntity<NosisEvaluationRequest> request = new HttpEntity<>(
+                new NosisEvaluationRequest(
+                        nosisUser,
+                        nosisToken,
+                        nosisSmsData.getSmsTx()
+                )
+        );
+
+        return restTemplate.exchange(nosisWs2 + "/validacion",
+                HttpMethod.POST, request, Nosis.class)
+                .getBody();
     }
 }

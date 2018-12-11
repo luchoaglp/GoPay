@@ -1,4 +1,4 @@
-package ar.com.gopay.domain.nosis.ws1;
+package ar.com.gopay.domain.nosis;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -16,11 +16,6 @@ public class Contenido {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("Datos")
     private Datos datos;
-
-    /*
-    @JsonProperty("status")
-    private Status status;
-    */
 
     public Pedido getPedido() {
         return pedido;
@@ -45,15 +40,6 @@ public class Contenido {
     public void setDatos(Datos datos) {
         this.datos = datos;
     }
-/*
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-*/
 
     @Override
     public String toString() {

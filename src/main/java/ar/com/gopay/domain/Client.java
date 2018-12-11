@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -28,6 +30,11 @@ public class Client extends User {
     @Size(min = 7, max = 8)
     private String dni;
 
+    @NotNull
+    @NotBlank
+    @Pattern(regexp = "^[1-3](\\d){10}$", message = "{phone.pattern}")
+    private String phone;
+
     @JsonProperty("payment_links")
     @OneToMany(
             mappedBy = "client",
@@ -43,11 +50,12 @@ public class Client extends User {
     public Client() { }
 
     public Client(String username, String email, String password,
-                  String firstName, String lastName, String dni) {
+                  String firstName, String lastName, String dni, String phone) {
         super(username, email, password);
         this.firstName = firstName;
         this.lastName = lastName;
         this.dni = dni;
+        this.phone = phone;
     }
 
     public void addPaymentLink(PaymentLink paymentLink) {
@@ -77,6 +85,14 @@ public class Client extends User {
 
     public void setDni(String dni) {
         this.dni = dni;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public List<PaymentLink> getPaymentLinks() {
@@ -116,4 +132,5 @@ public class Client extends User {
                 ", password='" + password + '\'' +
                 '}';
     }
+
 }
