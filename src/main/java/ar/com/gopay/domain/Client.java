@@ -22,17 +22,17 @@ public class Client extends User {
     private String firstName;
 
     @JsonProperty("last_name")
-    @NotBlank
-    @Size(min = 2, max = 50)
+    @NotBlank(message = "{lastName.notblank}")
+    @Size(min = 2, max = 50, message =  "{lastName.size}")
     private String lastName;
 
-    @NotBlank
-    @Size(min = 7, max = 8)
+    @NotBlank(message = "{dni.notblank}")
+    @Size(min = 2, max = 50, message =  "{dni.size}")
     private String dni;
 
     @NotNull
     @NotBlank
-    @Pattern(regexp = "^[1-3](\\d){10}$", message = "{phone.pattern}")
+    @Pattern(regexp = "^[1-3](\\d){9}$", message = "{phone.pattern}")
     private String phone;
 
     @JsonProperty("payment_links")

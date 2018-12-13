@@ -33,23 +33,33 @@
         </div>
         <div sec:authorize="isAuthenticated()" class="col-md-4">
             <div class="card-deck">
-                <div class="card mb-4 shadow-sm">
+                <div th:if="${!smsError}" class="card mb-4 shadow-sm">
                     <div class="card-header">
                         <h5 class="my-0 font-weight-normal">Transacción aprobada</h5>
                     </div>
                     <div class="card-body">
                         <form th:action="@{/payment-link/validation}" th:object="${sms}" method="post">
                             <p class="card-text">
-                                Se te ha enviado un PIN al <b><span th:text="${phone}" class="text-info"></span></b>,
+                                Se te ha enviado un PIN al teléfono: <b><span th:text="${phone}" class="text-info"></span></b>,
                                 ingresalo para completar la operación.
                             </p>
                             <div class="form-group">
                                 <label for="pin">PIN</label>
-                                <input type="text" class="form-control" th:errorclass="is-invalid" th:field="*{pin}" id="pin" placeholder="Ingrese el PIN" autofocus required>
+                                <input type="text" class="form-control" th:errorclass="is-invalid" th:field="*{pin}" id="pin" minlength="8" maxlength="8" placeholder="Ingrese el PIN" autofocus required>
                                 <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('pin')}" th:errors="*{pin}"></div>
                             </div>
                             <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Verificar</button>
                         </form>
+                    </div>
+                </div>
+                <div th:if="${smsError}" class="card mb-4 shadow-sm">
+                    <div class="card-header">
+                        <h5 class="my-0 font-weight-normal">Error en el envío de SMS</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-danger">
+                            No se ha podido enviar el PIN al teléfono: <b><span th:text="${phone}"></span></b>
+                        </div>
                     </div>
                 </div>
             </div>

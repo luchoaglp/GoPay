@@ -1,7 +1,7 @@
 package ar.com.gopay.domain;
 
 import ar.com.gopay.domain.nosispayment.NosisData;
-import ar.com.gopay.domain.nosispayment.NosisSmsData;
+import ar.com.gopay.domain.nosispayment.NosisSms;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -60,14 +60,14 @@ public class PaymentLink {
     )
     private List<NosisData> nosisData;
 
-    @JsonProperty("nosis_sms_data")
+    @JsonProperty("nosis_sms")
     @OneToOne(mappedBy = "paymentLink", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private NosisSmsData nosisSmsData;
+    private NosisSms nosisSms;
 
     @JsonProperty("created_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT-03:00")
     @CreatedDate
-    protected Date createdDate;
+    private Date createdDate;
 
     @JsonProperty("is_token_expired")
     @Transient
@@ -191,18 +191,19 @@ public class PaymentLink {
         this.state = state;
     }
 
-    public NosisSmsData getNosisSmsData() {
-        return nosisSmsData;
+    public NosisSms getNosisSms() {
+        return nosisSms;
     }
 
-    public void setNosisSmsData(NosisSmsData nosisSmsData) {
-        if (nosisSmsData == null) {
-            if (this.nosisSmsData != null) {
-                this.nosisSmsData.setPaymentLink(null);
+    public void setNosisSms(NosisSms nosisSms) {
+        if (nosisSms == null) {
+            if (this.nosisSms != null) {
+                this.nosisSms.setPaymentLink(null);
             }
         } else {
-            nosisSmsData.setPaymentLink(this);
+            nosisSms.setPaymentLink(this);
         }
-        this.nosisSmsData = nosisSmsData;
+        this.nosisSms = nosisSms;
     }
+
 }

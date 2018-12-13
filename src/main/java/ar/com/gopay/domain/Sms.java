@@ -7,8 +7,8 @@ import javax.validation.constraints.Size;
 public class Sms {
 
     @NotBlank
-    @Size(min = 8, max = 8)
-    @Pattern(regexp = "^[A-Z]{2}-(\\d){5}$")
+    @Size(min = 8, max = 8, message = "{pin.size}")
+    @Pattern(regexp = "^[A-Z]{2}-(\\d){5}$", message = "{pin.pattern}")
     private String pin;
 
     public String getPin() {

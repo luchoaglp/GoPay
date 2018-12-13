@@ -1,8 +1,8 @@
 package ar.com.gopay.service;
 
 import ar.com.gopay.domain.Client;
+import ar.com.gopay.domain.PaymentLink;
 import ar.com.gopay.domain.nosis.Nosis;
-import ar.com.gopay.domain.nosispayment.NosisSmsData;
 import ar.com.gopay.exception.RestTemplateResponseErrorHandler;
 import ar.com.gopay.payload.NosisEvaluationRequest;
 import ar.com.gopay.payload.NosisValidationRequest;
@@ -72,7 +72,7 @@ public class NosisService {
                 .getBody();
     }
 
-    public Nosis evaluation(NosisSmsData nosisSmsData) {
+    public Nosis evaluation(PaymentLink paymentLink, String pin) {
 
         RestTemplate restTemplate = builder
                 .errorHandler(new RestTemplateResponseErrorHandler())
@@ -82,12 +82,14 @@ public class NosisService {
                 new NosisEvaluationRequest(
                         nosisUser,
                         nosisToken,
-                        nosisSmsData.getSmsTx()
+                        paymentLink.getNosisSms().getSmsTx(),
+                        pin
                 )
         );
 
-        return restTemplate.exchange(nosisWs2 + "/validacion",
+        return restTemplate.exchange(nosisWs2 + "/evaluacion",
                 HttpMethod.POST, request, Nosis.class)
                 .getBody();
     }
+
 }

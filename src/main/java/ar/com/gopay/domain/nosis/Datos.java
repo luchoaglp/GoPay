@@ -51,4 +51,13 @@ public class Datos {
         this.variables = variables;
     }
 
+    @Override
+    public String toString() {
+        return "Datos{" +
+                "consultaId='" + consultaId + '\'' +
+                ", persona=" + persona +
+                ", sms=" + sms +
+                ", variables=" + variables +
+                '}';
+    }
 }

@@ -5,69 +5,119 @@ import ar.com.gopay.domain.nosis.Datos;
 import ar.com.gopay.domain.nosis.Nosis;
 import ar.com.gopay.domain.nosis.Resultado;
 import ar.com.gopay.domain.nosis.Sms;
-import ar.com.gopay.domain.nosispayment.NosisSmsData;
+import ar.com.gopay.domain.nosispayment.NosisSms;
+import ar.com.gopay.domain.nosispayment.NosisSmsValidation;
+import ar.com.gopay.domain.nosispayment.NosisSmsEvaluation;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+import static ar.com.gopay.domain.PaymentLinkState.OK;
+
 @Service
 public class NosisSmsService {
 
-    public boolean validateNosisSms(PaymentLink paymentLink, Nosis nosisWs2) {
+    public void validateSms(PaymentLink paymentLink, Nosis nosis, String phone) {
 
-        Resultado resultado = nosisWs2.getContenido().getResultado();
-        Datos datos = nosisWs2.getContenido().getDatos();
+        Resultado resultado = nosis.getContenido().getResultado();
+        Datos datos = nosis.getContenido().getDatos();
 
-        NosisSmsData nosisSmsData;
+        NosisSms nosisSms = paymentLink.getNosisSms();
+        NosisSmsValidation nosisSmsValidation = null;
 
-        if(paymentLink.getNosisSmsData() == null) {
+        if(nosisSms == null) {
 
-            nosisSmsData = new NosisSmsData();
+            nosisSms = new NosisSms();
+
+            nosisSmsValidation = nosisSms.getNosisSmsValidation();
+
+            if (nosisSmsValidation == null) {
+
+                nosisSmsValidation = new NosisSmsValidation();
+
+            } else {
+
+                nosisSms.setLastModifiedDate(new Date());
+            }
 
         } else {
 
-            nosisSmsData = paymentLink.getNosisSmsData();
-
-            nosisSmsData.setLastModifiedDate(new Date());
+            nosisSms.setLastModifiedDate(new Date());
         }
 
         Integer serverState = resultado.getEstado();
 
-        nosisSmsData.setServerState(serverState);
-        nosisSmsData.setServerDetail(resultado.getNovedad());
+        nosisSmsValidation.setServerState(serverState);
+        nosisSmsValidation.setServerDetail(resultado.getNovedad());
+        nosisSms.setPhone(phone);
 
         if(serverState == 200) {
 
             Sms sms = datos.getSms();
 
+            nosisSms.setSmsTx(datos.getConsultaId());
+            nosisSms.setSmsLastState(sms.getEstado());
+            nosisSmsValidation.setSmsDetail(sms.getNovedad());
+
             if(sms.getTokenEnviado() != null &&
                     sms.getTokenEnviado()) {
 
-                nosisSmsData.setSmsTx(datos.getConsultaId());
-                nosisSmsData.setSmsState(sms.getEstado());
-                nosisSmsData.setSmsDetail(sms.getNovedad());
+                nosisSmsValidation.setSmsSent(true);
 
-                paymentLink.setNosisSmsData(nosisSmsData);
-
-                return true;
-
-            } else {
-
-                paymentLink.setNosisSmsData(nosisSmsData);
-
-                return  false;
             }
+        }
+
+        nosisSms.setNosisSmsValidation(nosisSmsValidation);
+        paymentLink.setNosisSms(nosisSms);
+    }
+
+    public void evaluateSms(PaymentLink paymentLink, Nosis nosis) {
+
+        Resultado resultado = nosis.getContenido().getResultado();
+        Datos datos = nosis.getContenido().getDatos();
+
+        NosisSms nosisSms = paymentLink.getNosisSms();
+        NosisSmsEvaluation nosisSmsEvaluation;
+
+        if(nosisSms == null) {
+
+            return;
 
         } else {
 
-            nosisSmsData.setSmsTx(null);
+            nosisSmsEvaluation = nosisSms.getNosisSmsEvaluation();
 
-            paymentLink.setNosisSmsData(nosisSmsData);
+            if (nosisSmsEvaluation == null) {
 
-            return false;
+                nosisSmsEvaluation = new NosisSmsEvaluation();
+
+            }
+
+            nosisSms.setLastModifiedDate(new Date());
         }
-    }
 
+        Integer serverState = resultado.getEstado();
+
+        nosisSmsEvaluation.setServerState(serverState);
+        nosisSmsEvaluation.setServerDetail(resultado.getNovedad());
+
+        if(serverState == 200) {
+
+            Sms sms = datos.getSms();
+
+            String lastState = sms.getEstado();
+
+            nosisSms.setSmsLastState(lastState);
+
+            if(lastState.equals("APROBADO")) {
+                paymentLink.setState(OK);
+            }
+
+        }
+
+        nosisSms.setNosisSmsEvaluation(nosisSmsEvaluation);
+        paymentLink.setNosisSms(nosisSms);
+    }
 
 
 }

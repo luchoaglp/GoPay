@@ -20,11 +20,11 @@
                         <form th:action="@{/login?action=pay}" method="post">
                             <div class="form-group">
                                 <label for="usernameLogin">Usuario</label>
-                                <input type="text" class="form-control" name="username" id="usernameLogin" placeholder="Ingrese su Usuario" autofocus required>
+                                <input type="text" class="form-control" name="username" id="usernameLogin" minlength="6" maxlength="15" placeholder="Ingrese su Usuario" autofocus required>
                             </div>
                             <div class="form-group">
                                 <label for="passwordLogin">Clave</label>
-                                <input type="password" class="form-control" name="password" id="passwordLogin" placeholder="Ingrese su Clave">
+                                <input type="password" class="form-control" name="password" id="passwordLogin" minlength="6" maxlength="15" placeholder="Ingrese su Clave" required>
                             </div>
                             <div th:if="${param.error != null}" class="alert alert-danger">
                                 <span th:text="${param.error}"></span>

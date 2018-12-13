@@ -22,7 +22,7 @@ public class NosisPaymentVariableService {
     @Autowired
     private NosisPaymentVariableRepository nosisPaymentVariableRepository;
 
-    public boolean validateNosisData(Client client, PaymentLink paymentLink, Nosis nosis, double amount) {
+    public void validateNosisData(Client client, PaymentLink paymentLink, Nosis nosis, double amount) {
 
         Resultado resultado = nosis.getContenido().getResultado();
         Datos datos = nosis.getContenido().getDatos();
@@ -44,8 +44,6 @@ public class NosisPaymentVariableService {
 
         nosisClientData.setServerState(serverState);
         nosisClientData.setServerDetail(resultado.getNovedad());
-
-        boolean isValidTransaction = true;
 
         if(serverState == 200) {
 
@@ -96,17 +94,13 @@ public class NosisPaymentVariableService {
                             paymentLink.addNosisData(nosisData);
                         }
 
-                        if(isValidTransaction && nosisData.getState().equals(REJECTED)) {
-                            isValidTransaction = false;
+                        if(nosisData.getState().equals(REJECTED)) {
                             paymentLink.setState(RE);
                         }
 
                     } else {
 
-                        client.setNosisClientData(nosisClientData);
                         paymentLink.setState(RE);
-
-                        return false;
                     }
                 }
             }
@@ -117,15 +111,9 @@ public class NosisPaymentVariableService {
             nosisClientData.setLastName(null);
             nosisClientData.setState(REJECTED);
             paymentLink.setState(RE);
-
-            client.setNosisClientData(nosisClientData);
-
-            return false;
         }
 
         client.setNosisClientData(nosisClientData);
-
-        return isValidTransaction;
     }
 
     private NosisData getNosisData(Variable variable, NombreVariable nombreVariable, double amount) {

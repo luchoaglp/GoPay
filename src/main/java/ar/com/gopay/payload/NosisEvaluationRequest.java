@@ -13,10 +13,14 @@ public class NosisEvaluationRequest {
     @JsonProperty("IdConsulta")
     private String consultaId;
 
-    public NosisEvaluationRequest(String usuario, String token, String consultaId) {
+    @JsonProperty("TokenSms")
+    private String tokenSms;
+
+    public NosisEvaluationRequest(String usuario, String token, String consultaId, String tokenSms) {
         this.usuario = usuario;
         this.token = token;
         this.consultaId = consultaId;
+        this.tokenSms = tokenSms;
     }
 
     public String getUsuario() {
@@ -41,5 +45,23 @@ public class NosisEvaluationRequest {
 
     public void setConsultaId(String consultaId) {
         this.consultaId = consultaId;
+    }
+
+    public String getTokenSms() {
+        return tokenSms;
+    }
+
+    public void setTokenSms(String tokenSms) {
+        this.tokenSms = tokenSms;
+    }
+
+    @Override
+    public String toString() {
+        return "NosisEvaluationRequest{" +
+                "usuario='" + usuario + '\'' +
+                ", token='" + token + '\'' +
+                ", consultaId='" + consultaId + '\'' +
+                ", tokenSms='" + tokenSms + '\'' +
+                '}';
     }
 }

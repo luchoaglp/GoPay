@@ -30,4 +30,7 @@ public class PaymentLinkService {
         return paymentLinkRepository.findByToken(token);
     }
 
+    public void save(PaymentLink paymentLink) {
+        paymentLinkRepository.save(paymentLink);
+    }
 }

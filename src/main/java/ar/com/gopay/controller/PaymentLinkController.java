@@ -23,7 +23,9 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.security.Principal;
 
+import static ar.com.gopay.domain.PaymentLinkState.OK;
 import static ar.com.gopay.domain.PaymentLinkState.PE;
+import static ar.com.gopay.domain.PaymentLinkState.RE;
 
 @Controller
 @RequestMapping("/payment-link")
@@ -71,7 +73,7 @@ public class PaymentLinkController {
 
         } else {
 
-            return "payment/check";
+            return "redirect:/payment-link/check";
         }
     }
 
@@ -81,7 +83,6 @@ public class PaymentLinkController {
                         Principal principal) {
 
         if(principal == null) {
-
             return "payment/signin";
         }
 
@@ -103,15 +104,18 @@ public class PaymentLinkController {
 
             Nosis nosis = nosisService.getNosisByClient(client);
 
-            boolean isValidNosisData = nosisPaymentVariableService.validateNosisData(client, paymentLink, nosis, paymentLink.getAmount());
+            nosisPaymentVariableService.validateNosisData(client, paymentLink, nosis, paymentLink.getAmount());
 
-            boolean isValidNosisSms = false;
+            if(!paymentLink.getState().equals(RE)) {
 
-            if(isValidNosisData) {
+                nosis = nosisService.validation(client);
 
-                Nosis nosisWs2 = nosisService.validation(client);
+                nosisSmsService.validateSms(paymentLink, nosis, client.getPhone());
 
-                isValidNosisSms = nosisSmsService.validateNosisSms(paymentLink, nosisWs2);
+            } else {
+
+                session.removeAttribute("linkId");
+                session.removeAttribute("token");
             }
 
             client.addPaymentLink(paymentLink);
@@ -120,13 +124,12 @@ public class PaymentLinkController {
             // If the transaction is rejected, it changes state to RE
             clientService.save(client);
 
-            if(!isValidNosisData || !isValidNosisSms) {
-
-                session.removeAttribute("linkId");
-                session.removeAttribute("token");
+            if(paymentLink.getState().equals(RE)) {
 
                 throw new PaymentLinkException("Transacción rechazada");
             }
+
+            model.put("smsError", !paymentLink.getNosisSms().getNosisSmsValidation().getSmsSent());
 
             return "payment/check";
 
@@ -138,10 +141,13 @@ public class PaymentLinkController {
             model.put("phone", client.getPhone());
             model.put("sms", new Sms());
 
-            return "payment/check";
-        }
+            model.put("smsError", !paymentLink.getNosisSms().getNosisSmsValidation().getSmsSent());
 
-        throw new PaymentLinkException("Operación inválida");
+            return "payment/check";
+
+        } else {
+            throw new PaymentLinkException("Operación inválida");
+        }
     }
 
     @PostMapping("/validation")
@@ -158,11 +164,20 @@ public class PaymentLinkController {
         PaymentLinkHelper paymentLinkHelper = getSessionPaymentLink(session);
         PaymentLink paymentLink = paymentLinkService.getById(paymentLinkHelper.getId());
 
-        if(paymentLink.getClient() == null) {
+        validatePaymentLink(paymentLink, paymentLinkHelper.getToken());
+
+        Client client = paymentLink.getClient();
+
+        if(client == null) {
             throw new PaymentLinkException("No tiene operaciones pendientes");
         }
 
-        validatePaymentLink(paymentLink, paymentLinkHelper.getToken());
+        UserPrincipal user = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // This link does not belong to this client
+        if(!paymentLink.getClient().getId().equals(user.getId())) {
+            throw new PaymentLinkException("Operación inválida");
+        }
 
         model.put("paymentLink", paymentLink);
 
@@ -171,7 +186,30 @@ public class PaymentLinkController {
             return "payment/check";
         }
 
-        return null;
+        Nosis nosis = nosisService.evaluation(paymentLink, sms.getPin());
+
+        nosisSmsService.evaluateSms(paymentLink, nosis);
+
+        paymentLinkService.save(paymentLink);
+
+        if(paymentLink.getState().equals(OK)) {
+
+            // remove link?
+            session.removeAttribute("linkId");
+            session.removeAttribute("token");
+
+            return "payment/success";
+
+        } else {
+
+            result.addError(new FieldError(
+                    "sms",
+                    "pin",
+                    "Estado del PIN: " + paymentLink.getNosisSms().getSmsLastState()
+            ));
+
+            return "payment/check";
+        }
     }
 
     @GetMapping("/signin")
