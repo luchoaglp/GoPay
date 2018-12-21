@@ -12,7 +12,7 @@ public class NosisData {
 
     @JsonIgnore
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @JsonProperty("nosis_payment_variable")

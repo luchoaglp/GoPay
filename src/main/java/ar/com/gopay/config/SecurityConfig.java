@@ -24,8 +24,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final String[] PUBLIC_MATCHERS = {
             "/css/**", "/js/**", "/img/**", "/",
             "/payment-link/**",
-            "/home",
-            "/clients/**", // Only for development
+            "/home", "/signin", "/signup",
+            "/fee", // Only for development
             "/h2-console/**"
     };
 
@@ -52,7 +52,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .cors().disable()
                 .formLogin()
-                    .loginPage("/login").permitAll()
+                    .loginProcessingUrl("/login")
+                    .loginPage("/signin").permitAll()
                     //.defaultSuccessUrl("/")
                     //.failureUrl("/login?error")
                     .successHandler(customAuthenticationSuccessHandler())

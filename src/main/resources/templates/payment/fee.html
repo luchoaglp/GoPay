@@ -19,7 +19,7 @@
                     <div class="card-body text-center">
                         <img th:src="${paymentLink.company.logo}" class="img-fluid">
                         <hr>
-                        <h2 class="card-title pricing-card-title">$<span th:text="${#numbers.formatDecimal(paymentLink.amount, 0, 2, 'POINT')}"></span></h2>
+                        <h2 class="card-title pricing-card-title">$<span th:text="${#numbers.formatDecimal(paymentLink.amount, 0, 0)}"></span></h2>
                         <ul class="list-unstyled mt-3 mb-4">
                             <li>Paga en hasta <span class="text-primary">6 cuotas</span></li>
                             <li class="text-primary">sin interés de
@@ -31,16 +31,26 @@
                 </div>
             </div>
         </div>
-        <div sec:authorize="!isAuthenticated()" class="col-md-4">
+        <!--<div sec:authorize="isAuthenticated()" class="col-md-4">-->
+        <div class="col-md-4">
             <div class="card-deck">
                 <div class="card mb-4 shadow-sm">
                     <div class="card-header">
-                        <h5 class="my-0 font-weight-normal">Para comprar, ingresá a tu cuenta</h5>
+                        <h5 class="my-0 font-weight-normal">Gracias por tu compra</h5>
                     </div>
-                    <div class="card-body text-center">
-                        <a th:href="@{/signup(action=pay)}" class="btn btn-lg btn-block btn-outline-primary">Soy Nuevo</a>
-                        <hr>
-                        <a th:href="@{/signin(action=pay)}">Ya tengo cuenta</a>
+                    <div class="card-body">
+                        <form th:action="@{/payment-link/fee}" method="post">
+                            <p class="mt-2 mb-3">
+                                Elije el plan de cuotas:
+                            </p>
+                            <div class="form-check" th:each="fee: ${fees}">
+                                <input type="radio" th:value="${fee.quantity}">
+                                <label class="form-check-label"
+                                       th:text="${fee.quantity + ' cuotas sin interés de $' + #numbers.formatDecimal(fee.amount, 0, 2, 'POINT')}"></label>
+                            </div>
+                            <hr>
+                            <a class="btn btn-lg btn-block btn-outline-success">Comprar</a>
+                        </form>
                     </div>
                 </div>
             </div>

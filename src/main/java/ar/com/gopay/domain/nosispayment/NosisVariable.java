@@ -2,17 +2,14 @@ package ar.com.gopay.domain.nosispayment;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table(name = "nosis_payment_variables")
+@Table(name = "nosis_variables")
 public class NosisVariable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String name;
@@ -24,7 +21,7 @@ public class NosisVariable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer max;
 
-    private String condition;
+    private String criterion;
 
     public NosisVariable() { }
 
@@ -33,15 +30,15 @@ public class NosisVariable {
         this.description = description;
         this.min = min;
         this.max = max;
-        this.condition = min + " >= value <= " + max;
+        this.criterion = min + " >= value <= " + max;
     }
 
-    public NosisVariable(String name, String description, String condition) {
+    public NosisVariable(String name, String description, String criterion) {
         this.name = name;
         this.description = description;
         this.min = min;
         this.max = max;
-        this.condition = condition;
+        this.criterion = criterion;
     }
 
     public Integer getId() {
@@ -84,11 +81,11 @@ public class NosisVariable {
         this.max = max;
     }
 
-    public String getCondition() {
-        return condition;
+    public String getCriterion() {
+        return criterion;
     }
 
-    public void setCondition(String condition) {
-        this.condition = condition;
+    public void setCriterion(String condition) {
+        this.criterion = condition;
     }
 }

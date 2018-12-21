@@ -22,7 +22,7 @@ public class PaymentLink {
     private static final int EXPIRATION = 30;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank

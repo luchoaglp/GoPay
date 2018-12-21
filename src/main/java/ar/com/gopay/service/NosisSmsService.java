@@ -109,10 +109,11 @@ public class NosisSmsService {
 
             nosisSms.setSmsLastState(lastState);
 
+            /*
             if(lastState.equals("APROBADO")) {
                 paymentLink.setState(OK);
             }
-
+            */
         }
 
         nosisSms.setNosisSmsEvaluation(nosisSmsEvaluation);

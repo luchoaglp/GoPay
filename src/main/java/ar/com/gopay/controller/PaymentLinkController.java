@@ -1,6 +1,7 @@
 package ar.com.gopay.controller;
 
 import ar.com.gopay.domain.Client;
+import ar.com.gopay.domain.Fee;
 import ar.com.gopay.domain.PaymentLink;
 import ar.com.gopay.domain.Sms;
 import ar.com.gopay.domain.nosis.Nosis;
@@ -9,7 +10,6 @@ import ar.com.gopay.security.UserPrincipal;
 import ar.com.gopay.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Arrays;
 
-import static ar.com.gopay.domain.PaymentLinkState.OK;
 import static ar.com.gopay.domain.PaymentLinkState.PE;
 import static ar.com.gopay.domain.PaymentLinkState.RE;
 
@@ -36,9 +36,6 @@ public class PaymentLinkController {
 
     @Autowired
     private ClientService clientService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private NosisService nosisService;
@@ -83,7 +80,7 @@ public class PaymentLinkController {
                         Principal principal) {
 
         if(principal == null) {
-            return "payment/signin";
+            return "signin";
         }
 
         PaymentLinkHelper paymentLinkHelper = getSessionPaymentLink(session);
@@ -150,6 +147,25 @@ public class PaymentLinkController {
         }
     }
 
+    @GetMapping("/fee")
+    public String fee(ModelMap model,
+                      HttpSession session,
+                      Principal principal) {
+
+        PaymentLinkHelper paymentLinkHelper = getSessionPaymentLink(session);
+        PaymentLink paymentLink = paymentLinkService.getById(paymentLinkHelper.getId());
+
+        model.put("paymentLink", paymentLink);
+
+        model.put("fees", Arrays.asList(
+           new Fee(3, paymentLink.getAmount()),
+           new Fee(6, paymentLink.getAmount())
+        ));
+
+        return "payment/fee";
+
+    }
+
     @PostMapping("/validation")
     public String validation(@Valid Sms sms,
                              BindingResult result,
@@ -192,13 +208,12 @@ public class PaymentLinkController {
 
         paymentLinkService.save(paymentLink);
 
-        if(paymentLink.getState().equals(OK)) {
+        if(paymentLink.getNosisSms().getSmsLastState().equals("APROBADO")) {
 
-            // remove link?
-            session.removeAttribute("linkId");
-            session.removeAttribute("token");
+            //session.removeAttribute("linkId");
+            //session.removeAttribute("token");
 
-            return "payment/success";
+            return "payment/pay";
 
         } else {
 
@@ -210,61 +225,6 @@ public class PaymentLinkController {
 
             return "payment/check";
         }
-    }
-
-    @GetMapping("/signin")
-    public String signin() {
-
-        return "payment/signin";
-    }
-
-    @GetMapping("/signup")
-    public String signup(ModelMap model,
-                         Principal principal) {
-
-        // If user is not in session
-        if(principal == null) {
-
-            model.put("client", new Client());
-        }
-
-        return "payment/signup";
-    }
-
-    @PostMapping("/signup")
-    public String signup(@Valid Client client,
-                         BindingResult result) {
-
-        if(result.hasErrors()) {
-
-            return "payment/signup";
-
-        } else if(clientService.existsByUsername(client.getUsername())) {
-
-            result.addError(new FieldError(
-                    "client",
-                    "username",
-                    "El usuario ya se encuentra registrado"
-            ));
-
-            return "payment/signup";
-
-        } else if(clientService.existsByDni(client.getDni())) {
-
-            result.addError(new FieldError(
-                    "client",
-                    "dni",
-                    "El DNI ya se encuentra registrado"
-            ));
-
-            return "payment/signup";
-        }
-
-        client.setPassword(passwordEncoder.encode(client.getPassword()));
-
-        clientService.save(client);
-
-        return "payment/signin";
     }
 
     private void validatePaymentLink(PaymentLink paymentLink, String token) {

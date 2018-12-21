@@ -22,7 +22,7 @@ import java.util.Date;
 public abstract class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     protected Long id;
 
     @NotNull

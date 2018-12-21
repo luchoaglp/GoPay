@@ -14,12 +14,14 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
                                         HttpServletResponse response,
                                         AuthenticationException exception) throws IOException {
 
+        String url = "signin?";
+
         if(request.getParameter("action") != null) {
 
             if(request.getParameter("action").equals("pay")) {
-                response.sendRedirect("payment-link/signin?error=" + exception.getMessage());
+                url += "action=pay&";
             }
         }
-
+        response.sendRedirect(url +"error=" + exception.getMessage());
     }
 }

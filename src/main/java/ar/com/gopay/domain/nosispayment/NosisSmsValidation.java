@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class NosisSmsValidation {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @JsonProperty("server_state")

@@ -14,7 +14,7 @@ import java.util.Date;
 public class NosisSms {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @JsonProperty("sms_last_state")

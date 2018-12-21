@@ -6,7 +6,7 @@
 
 <body>
 
-<nav th:replace="common-payment-link/navbar :: navbar"/>
+<nav th:replace="common/navbar :: navbar"/>
 
 <div class="container">
     <div class="row pt-md-4 mb-3">
@@ -17,7 +17,7 @@
                         <h4 class="my-0 font-weight-normal">Registro de cliente</h4>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/payment-link/signup}" th:object="${client}" method="post">
+                        <form th:action="@{/signup} + (${param.action} ? '?action=' + ${param.action} : '')" th:object="${client}" method="post">
                             <div class="form-group">
                                 <label for="username">Usuario</label>
                                 <input type="text" class="form-control" minlength="6" maxlength="15" th:errorclass="is-invalid" th:field="*{username}" id="username" placeholder="Ingrese su Usuario" autofocus required>
@@ -62,11 +62,11 @@
         </div>
     </div>
 
-    <footer th:replace="common-payment-link/footer :: footer"/>
+    <footer th:replace="common/footer :: footer"/>
 
 </div>
 
-<div th:replace="common-payment-link/bottom :: body-bottom-scripts"/>
+<div th:replace="common/bottom :: body-bottom-scripts"/>
 
 </body>
 </html>

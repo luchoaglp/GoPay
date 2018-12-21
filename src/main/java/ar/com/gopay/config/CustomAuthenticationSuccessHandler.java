@@ -22,6 +22,10 @@ public class CustomAuthenticationSuccessHandler
             if (request.getParameter("action").equals("pay")) {
                 response.sendRedirect("payment-link/check");
             }
+
+        } else {
+
+            response.sendRedirect("home");
         }
     }
 }

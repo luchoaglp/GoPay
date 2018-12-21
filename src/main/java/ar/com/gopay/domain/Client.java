@@ -8,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -47,7 +48,9 @@ public class Client extends User {
     @OneToOne(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private NosisClientData nosisClientData;
 
-    public Client() { }
+    public Client() {
+        this.createdDate = new Date();
+    }
 
     public Client(String username, String email, String password,
                   String firstName, String lastName, String dni, String phone) {
