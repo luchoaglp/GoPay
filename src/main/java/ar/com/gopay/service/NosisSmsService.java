@@ -6,6 +6,7 @@ import ar.com.gopay.domain.nosis.Nosis;
 import ar.com.gopay.domain.nosis.Resultado;
 import ar.com.gopay.domain.nosis.Sms;
 import ar.com.gopay.domain.nosispayment.NosisSms;
+import ar.com.gopay.domain.nosispayment.NosisSmsState;
 import ar.com.gopay.domain.nosispayment.NosisSmsValidation;
 import ar.com.gopay.domain.nosispayment.NosisSmsEvaluation;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,8 @@ public class NosisSmsService {
 
         } else {
 
+            nosisSmsValidation = nosisSms.getNosisSmsValidation();
+
             nosisSms.setLastModifiedDate(new Date());
         }
 
@@ -56,7 +59,7 @@ public class NosisSmsService {
             Sms sms = datos.getSms();
 
             nosisSms.setSmsTx(datos.getConsultaId());
-            nosisSms.setSmsLastState(sms.getEstado());
+            nosisSms.setSmsLastState(sms.getState());
             nosisSmsValidation.setSmsDetail(sms.getNovedad());
 
             if(sms.getTokenEnviado() != null &&
@@ -64,6 +67,9 @@ public class NosisSmsService {
 
                 nosisSmsValidation.setSmsSent(true);
 
+            } else {
+
+                nosisSmsValidation.setSmsSent(false);
             }
         }
 
@@ -105,7 +111,7 @@ public class NosisSmsService {
 
             Sms sms = datos.getSms();
 
-            String lastState = sms.getEstado();
+            NosisSmsState lastState = sms.getState();
 
             nosisSms.setSmsLastState(lastState);
 

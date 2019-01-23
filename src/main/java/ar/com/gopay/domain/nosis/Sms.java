@@ -1,6 +1,9 @@
 package ar.com.gopay.domain.nosis;
 
+import ar.com.gopay.domain.nosispayment.NosisSmsState;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import static ar.com.gopay.domain.nosispayment.NosisSmsState.*;
 
 public class Sms {
 
@@ -31,6 +34,21 @@ public class Sms {
 
     public String getEstado() {
         return estado;
+    }
+
+    public NosisSmsState getState() {
+        switch (estado) {
+            case "PENDIENTE":
+                return PENDIENTE;
+            case "APROBADO":
+                return APROBADO;
+            case "RECHAZADO":
+                return RECHAZADO;
+            case "ERROR":
+                return ERROR;
+        }
+
+        return null;
     }
 
     public void setEstado(String estado) {

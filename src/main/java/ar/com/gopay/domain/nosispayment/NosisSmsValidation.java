@@ -22,8 +22,8 @@ public class NosisSmsValidation {
     @JsonProperty("sms_detail")
     private String smsDetail;
 
-    @JsonProperty("isSmsSent")
-    private Boolean isSmsSent = false;
+    @JsonProperty("is_sms_sent")
+    private Boolean smsSent = false;
 
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
@@ -74,11 +74,11 @@ public class NosisSmsValidation {
     }
 
     public Boolean getSmsSent() {
-        return isSmsSent;
+        return smsSent;
     }
 
     public void setSmsSent(Boolean smsSent) {
-        isSmsSent = smsSent;
+        this.smsSent = smsSent;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class NosisSmsValidation {
                 ", serverState=" + serverState +
                 ", serverDetail='" + serverDetail + '\'' +
                 ", smsDetail='" + smsDetail + '\'' +
-                ", isSmsSent=" + isSmsSent +
+                ", smsSent=" + smsSent +
                 '}';
     }
 }

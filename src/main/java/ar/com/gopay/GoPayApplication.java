@@ -13,7 +13,6 @@ public class GoPayApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(GoPayApplication.class, args);
 	}
-
     @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();

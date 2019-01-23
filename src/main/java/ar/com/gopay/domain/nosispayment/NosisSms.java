@@ -18,7 +18,8 @@ public class NosisSms {
     private Long id;
 
     @JsonProperty("sms_last_state")
-    private String smsLastState;
+    @Enumerated(EnumType.STRING)
+    private NosisSmsState smsLastState;
 
     @JsonProperty("last_modified_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT-03:00")
@@ -52,11 +53,11 @@ public class NosisSms {
         this.id = id;
     }
 
-    public String getSmsLastState() {
+    public NosisSmsState getSmsLastState() {
         return smsLastState;
     }
 
-    public void setSmsLastState(String smsLastState) {
+    public void setSmsLastState(NosisSmsState smsLastState) {
         this.smsLastState = smsLastState;
     }
 

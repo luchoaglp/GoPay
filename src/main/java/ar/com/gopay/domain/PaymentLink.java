@@ -15,6 +15,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static ar.com.gopay.domain.PaymentLinkState.PE;
+
 @Entity
 @Table(name = "payments_links")
 public class PaymentLink {
@@ -45,6 +47,7 @@ public class PaymentLink {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT-03:00")
     private Date expiryDate;
 
+    @Enumerated(EnumType.STRING)
     private PaymentLinkState state;
 
     @JsonIgnore
@@ -72,6 +75,9 @@ public class PaymentLink {
     @JsonProperty("is_token_expired")
     @Transient
     private boolean tokenExpired;
+
+    @JsonProperty("fees_quantity")
+    private Integer feesQuantity;
 
     public PaymentLink() {
     }
@@ -104,7 +110,7 @@ public class PaymentLink {
     }
 
     public boolean isTokenExpired() {
-        return this.tokenExpired = this.getExpiryDate().getTime() - Calendar.getInstance().getTime().getTime() <= 0;
+        return this.tokenExpired = this.expiryDate.getTime() - Calendar.getInstance().getTime().getTime() <= 0;
     }
 
     public Long getId() {
@@ -191,6 +197,14 @@ public class PaymentLink {
         this.state = state;
     }
 
+    public Integer getFeesQuantity() {
+        return feesQuantity;
+    }
+
+    public void setFeesQuantity(Integer feesQuantity) {
+        this.feesQuantity = feesQuantity;
+    }
+
     public NosisSms getNosisSms() {
         return nosisSms;
     }
@@ -206,4 +220,21 @@ public class PaymentLink {
         this.nosisSms = nosisSms;
     }
 
+    public boolean isPending() {
+        return this.state == PE;
+    }
+
+    @Override
+    public String toString() {
+        return "PaymentLink{" +
+                "id=" + id +
+                ", token='" + token + '\'' +
+                ", amount=" + amount +
+                ", externalTxId='" + externalTxId + '\'' +
+                ", expiryDate=" + expiryDate +
+                ", createdDate=" + createdDate +
+                ", tokenExpired=" + tokenExpired +
+                ", feesQuantity=" + feesQuantity +
+                '}';
+    }
 }

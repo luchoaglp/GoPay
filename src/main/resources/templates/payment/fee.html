@@ -43,13 +43,13 @@
                             <p class="mt-2 mb-3">
                                 Elije el plan de cuotas:
                             </p>
-                            <div class="form-check" th:each="fee: ${fees}">
-                                <input type="radio" th:value="${fee.quantity}">
+                            <div class="form-check" th:each="fee,iter: ${fees}">
+                                <input type="radio" name="feesQuantity" th:value="${fee.quantity}" th:checked="${iter.index == 0}">
                                 <label class="form-check-label"
                                        th:text="${fee.quantity + ' cuotas sin interés de $' + #numbers.formatDecimal(fee.amount, 0, 2, 'POINT')}"></label>
                             </div>
                             <hr>
-                            <a class="btn btn-lg btn-block btn-outline-success">Comprar</a>
+                            <button type="submit" class="btn btn-lg btn-block btn-outline-success">Comprar</button>
                         </form>
                     </div>
                 </div>

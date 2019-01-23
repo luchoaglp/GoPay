@@ -67,9 +67,15 @@ public class NosisService {
                 )
         );
 
-        return restTemplate.exchange(nosisWs2 + "/validacion",
+        //System.out.println(request.getBody());
+
+        Nosis nosis = restTemplate.exchange(nosisWs2 + "/validacion",
                 HttpMethod.POST, request, Nosis.class)
                 .getBody();
+
+        //System.out.println(nosis);
+
+        return nosis;
     }
 
     public Nosis evaluation(PaymentLink paymentLink, String pin) {

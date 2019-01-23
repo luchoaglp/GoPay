@@ -45,7 +45,7 @@
                             </p>
                             <div class="form-group">
                                 <label for="pin">PIN</label>
-                                <input type="text" class="form-control" th:errorclass="is-invalid" th:field="*{pin}" id="pin" minlength="8" maxlength="8" placeholder="Ingrese el PIN" autofocus required>
+                                <input type="text" class="form-control" th:errorclass="is-invalid" th:field="*{pin}" id="pin" minlength="8" maxlength="8" placeholder="Ingrese el PIN" onkeyup="this.value = this.value.toUpperCase();" autofocus required>
                                 <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('pin')}" th:errors="*{pin}"></div>
                             </div>
                             <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Verificar</button>
@@ -60,6 +60,7 @@
                         <div class="alert alert-danger">
                             No se ha podido enviar el PIN al teléfono: <b><span th:text="${phone}"></span></b>
                         </div>
+                        <a th:href="@{/payment-link/resend}" class="btn btn-lg btn-block btn-outline-primary">Reenviar SMS</a>
                     </div>
                 </div>
             </div>

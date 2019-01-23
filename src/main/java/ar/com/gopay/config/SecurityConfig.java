@@ -26,7 +26,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/payment-link/**",
             "/home", "/signin", "/signup",
             "/fee", // Only for development
-            "/h2-console/**"
+            "/clients" // Only for development
+            //h2-console/**"
     };
 
     @Bean
@@ -49,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticated();
 
         http
-                .csrf().disable()
+                //.csrf().disable()
                 .cors().disable()
                 .formLogin()
                     .loginProcessingUrl("/login")
