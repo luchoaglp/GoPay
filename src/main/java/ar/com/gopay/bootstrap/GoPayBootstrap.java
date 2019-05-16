@@ -9,6 +9,7 @@ import ar.com.gopay.repository.CompanyRepository;
 import ar.com.gopay.repository.NosisPaymentVariableRepository;
 import ar.com.gopay.repository.PaymentLinkRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -24,6 +25,12 @@ import static ar.com.gopay.domain.nosis.NombreVariable.*;
 @Slf4j
 @Component
 public class GoPayBootstrap implements ApplicationListener<ContextRefreshedEvent> {
+
+    @Value("${podios.username}")
+    private String podiosUsername;
+
+    @Value("${podios.password}")
+    private String podiosPassword;
 
     private final ClientRepository clientRepository;
     private final CompanyRepository companyRepository;
@@ -44,20 +51,27 @@ public class GoPayBootstrap implements ApplicationListener<ContextRefreshedEvent
 
         try {
 
-            Company company1 = new Company("despegar",
+            Company despegar = new Company("despegar",
                     "despegar@email.com",
                     passwordEncoder.encode("123456"),
                     "despegar.com",
-                    "https://www.staticontent.com/shifu/static/logos/despegar.svg");
+                    "despegar.png");
 
-            Company company2 = new Company("potiers",
+            Company potiers = new Company("potiers",
                     "potiershome@email.com",
                     passwordEncoder.encode("123456"),
                     "Potiers Home",
-                    "https://www.potiershome.com/images/logo.png");
+                    "potiershome.png");
 
-            companyRepository.save(company1);
-            companyRepository.save(company2);
+            Company podios = new Company(podiosUsername,
+                    "info@podios.com.ar",
+                    passwordEncoder.encode(podiosPassword),
+                    "Podios",
+                    "podios.jpg");
+
+            companyRepository.save(despegar);
+            companyRepository.save(potiers);
+            companyRepository.save(podios);
 
             String token1 = UUID.randomUUID().toString();
             String token2 = UUID.randomUUID().toString();
@@ -68,25 +82,25 @@ public class GoPayBootstrap implements ApplicationListener<ContextRefreshedEvent
                     "Producto 1",
                     20000.0,
                     "123",
-                    company1, PE));
+                    despegar, PE));
 
             PaymentLink link2 = paymentLinkRepository.save(new PaymentLink(token2,
                     "Producto 2",
                     1250.0,
                     "456",
-                    company2, PE));
+                    potiers, PE));
 
             PaymentLink link3 = paymentLinkRepository.save(new PaymentLink(token3,
                     "Producto 3",
                     1500000.0,
                     "789",
-                    company1, PE));
+                    despegar, PE));
 
             PaymentLink link4 = paymentLinkRepository.save(new PaymentLink(token4,
                     "Producto 4",
                     15.0,
                     "abc",
-                    company2, PE));
+                    potiers, PE));
 
             clientRepository.saveAll(
                     Arrays.asList(
