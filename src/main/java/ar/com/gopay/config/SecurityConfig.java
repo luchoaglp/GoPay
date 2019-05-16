@@ -30,6 +30,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             //h2-console/**"
     };
 
+    private final String[] CLIENT_MATCHERS = {
+            "/transactions/**"
+    };
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -46,6 +50,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(PUBLIC_MATCHERS)
                 .permitAll()
+
+                //.antMatchers(CLIENT_MATCHERS).hasRole("CLIENT_ROLE")
+
                 .anyRequest()
                 .authenticated();
 

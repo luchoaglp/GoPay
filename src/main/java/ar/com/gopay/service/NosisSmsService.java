@@ -9,12 +9,14 @@ import ar.com.gopay.domain.nosispayment.NosisSms;
 import ar.com.gopay.domain.nosispayment.NosisSmsState;
 import ar.com.gopay.domain.nosispayment.NosisSmsValidation;
 import ar.com.gopay.domain.nosispayment.NosisSmsEvaluation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
 import static ar.com.gopay.domain.PaymentLinkState.OK;
 
+@Slf4j
 @Service
 public class NosisSmsService {
 

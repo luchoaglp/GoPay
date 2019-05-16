@@ -52,9 +52,9 @@ public class Client extends User {
         this.createdDate = new Date();
     }
 
-    public Client(String username, String email, String password,
+    public Client(String email, String password,
                   String firstName, String lastName, String dni, String phone) {
-        super(username, email, password);
+        super(email, password);
         this.firstName = firstName;
         this.lastName = lastName;
         this.dni = dni;
@@ -127,12 +127,11 @@ public class Client extends User {
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", dni='" + dni + '\'' +
+                ", phone='" + phone + '\'' +
                 ", paymentLinks=" + paymentLinks +
                 ", nosisClientData=" + nosisClientData +
                 ", id=" + id +
-                ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 '}';
     }
 

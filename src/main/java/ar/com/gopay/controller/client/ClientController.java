@@ -1,8 +1,7 @@
-package ar.com.gopay.controller;
+package ar.com.gopay.controller.client;
 
 import ar.com.gopay.domain.Client;
 import ar.com.gopay.service.ClientService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -17,13 +16,16 @@ import java.security.Principal;
 @Controller
 public class ClientController {
 
-    @Autowired
-    private ClientService clientService;
+    private final ClientService clientService;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public ClientController(ClientService clientService, PasswordEncoder passwordEncoder) {
+        this.clientService = clientService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-    @GetMapping("/home")
+
+    @GetMapping({"", "/home"})
     public String home() {
         return "home";
     }
@@ -57,11 +59,11 @@ public class ClientController {
 
             return "signup";
 
-        } else if(clientService.existsByUsername(client.getUsername())) {
+        } else if(clientService.existsByEmail(client.getEmail())) {
 
             result.addError(new FieldError(
                     "client",
-                    "username",
+                    "email",
                     "El usuario ya se encuentra registrado"
             ));
 

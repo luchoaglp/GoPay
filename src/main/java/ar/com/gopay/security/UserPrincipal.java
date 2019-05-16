@@ -1,6 +1,7 @@
 package ar.com.gopay.security;
 
 import ar.com.gopay.domain.Client;
+import ar.com.gopay.domain.Company;
 import ar.com.gopay.domain.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
@@ -49,21 +50,33 @@ public class UserPrincipal implements UserDetails {
 
         List<GrantedAuthority> authorities = null;
 
-        //System.out.println("USER (UserPrincipal): " + user);
-        //System.out.println("PASS: " + user.getPassword());
-
         if(user instanceof Client) {
 
-            authorities = Arrays.asList(new SimpleGrantedAuthority("CLIENT_ROLE"));
+            authorities = Arrays.asList(new SimpleGrantedAuthority("ROLE_CLIENT"));
 
             Client client = (Client) user;
 
             return new UserPrincipal(
                     client.getId(),
                     client.getFirstName() + " " + client.getLastName(),
-                    client.getUsername(),
+                    null,
                     client.getEmail(),
                     client.getPassword(),
+                    authorities
+            );
+
+        } else if(user instanceof Company) {
+
+            authorities = Arrays.asList(new SimpleGrantedAuthority("ROLE_COMPANY"));
+
+            Company company = (Company) user;
+
+            return new UserPrincipal(
+                    company.getId(),
+                    company.getName(),
+                    company.getUsername(),
+                    company.getEmail(),
+                    company.getPassword(),
                     authorities
             );
         }

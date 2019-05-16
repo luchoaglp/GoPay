@@ -6,6 +6,7 @@ import ar.com.gopay.domain.nosis.Nosis;
 import ar.com.gopay.exception.RestTemplateResponseErrorHandler;
 import ar.com.gopay.payload.NosisEvaluationRequest;
 import ar.com.gopay.payload.NosisValidationRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Service
 public class NosisService {
 
@@ -47,6 +49,8 @@ public class NosisService {
                 .append("&Format=JSON")
                 .append("&VR=VI_Nombre,VI_Apellido,CI_Vig_PeorSit,CI_Vig_Total_CantBcos,CI_12m_PeorSit,VR_Vig_CapacidadEndeu_Deuda,SCO_Vig");
 
+        log.info("nosisWs1: " + nosisUrl.toString());
+
         return restTemplate.exchange(nosisUrl.toString(),
                 HttpMethod.GET, null,
                 Nosis.class).getBody();
@@ -67,7 +71,7 @@ public class NosisService {
                 )
         );
 
-        //System.out.println(request.getBody());
+        //log.info("NosisService Validation", request.getBody());
 
         Nosis nosis = restTemplate.exchange(nosisWs2 + "/validacion",
                 HttpMethod.POST, request, Nosis.class)

@@ -5,11 +5,10 @@ import ar.com.gopay.domain.Fee;
 import ar.com.gopay.domain.PaymentLink;
 import ar.com.gopay.domain.Sms;
 import ar.com.gopay.domain.nosis.Nosis;
-import ar.com.gopay.domain.nosispayment.NosisSmsState;
 import ar.com.gopay.exception.PaymentLinkException;
 import ar.com.gopay.security.UserPrincipal;
 import ar.com.gopay.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -27,25 +26,24 @@ import static ar.com.gopay.domain.PaymentLinkState.RE;
 import static ar.com.gopay.domain.nosispayment.NosisSmsState.APROBADO;
 import static ar.com.gopay.domain.nosispayment.NosisSmsState.PENDIENTE;
 
+@Slf4j
 @Controller
 @RequestMapping("/payment-link")
 public class PaymentLinkController {
 
-    @Autowired
-    private PaymentLinkService paymentLinkService;
+    private final PaymentLinkService paymentLinkService;
+    private final ClientService clientService;
+    private final NosisService nosisService;
+    private final NosisPaymentVariableService nosisPaymentVariableService;
+    private final NosisSmsService nosisSmsService;
 
-    @Autowired
-    private ClientService clientService;
-
-    @Autowired
-    private NosisService nosisService;
-
-    @Autowired
-    private NosisPaymentVariableService nosisPaymentVariableService;
-
-    @Autowired
-    private NosisSmsService nosisSmsService;
-
+    public PaymentLinkController(PaymentLinkService paymentLinkService, ClientService clientService, NosisService nosisService, NosisPaymentVariableService nosisPaymentVariableService, NosisSmsService nosisSmsService) {
+        this.paymentLinkService = paymentLinkService;
+        this.clientService = clientService;
+        this.nosisService = nosisService;
+        this.nosisPaymentVariableService = nosisPaymentVariableService;
+        this.nosisSmsService = nosisSmsService;
+    }
 
     @GetMapping("/{linkId}/{token}")
     public String start(@PathVariable("linkId") Long linkId,
@@ -68,7 +66,7 @@ public class PaymentLinkController {
 
         model.put("paymentLink", paymentLink);
 
-        // Client is in session,
+        // Client is in session
         if(principal != null) {
 
             return "redirect:/payment-link/check";
@@ -227,10 +225,6 @@ public class PaymentLinkController {
             if(!paymentLink.getNosisSms().getSmsLastState().equals(PENDIENTE)) {
 
                 Nosis nosis = nosisService.validation(client);
-
-                System.out.println("LINK: " + paymentLink);
-                System.out.println("NOSIS: " + nosis);
-                System.out.println("CLIENT: " + client);
 
                 // Possible PIN states: (PENDIENTE, ERROR)
                 nosisSmsService.validateSms(paymentLink, nosis, client.getPhone());

@@ -15,13 +15,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static ar.com.gopay.domain.PaymentLinkState.CA;
 import static ar.com.gopay.domain.PaymentLinkState.PE;
 
 @Entity
 @Table(name = "payments_links")
 public class PaymentLink {
 
-    private static final int EXPIRATION = 30;
+    private static final int EXPIRATION = 120;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +31,8 @@ public class PaymentLink {
     @NotBlank
     @Size(max = 36)
     private String token;
+
+    private String description;
 
     @NotNull
     private Double amount;
@@ -82,8 +85,9 @@ public class PaymentLink {
     public PaymentLink() {
     }
 
-    public PaymentLink(String token, Double amount, String externalTxId, Company company, PaymentLinkState state) {
+    public PaymentLink(String token, String description, Double amount, String externalTxId, Company company, PaymentLinkState state) {
         this.token = token;
+        this.description = description;
         this.amount = amount;
         this.externalTxId = externalTxId;
         this.company = company;
@@ -127,6 +131,14 @@ public class PaymentLink {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Double getAmount() {
@@ -190,6 +202,10 @@ public class PaymentLink {
     }
 
     public PaymentLinkState getState() {
+
+        if(isPending() && isTokenExpired()) {
+            return CA;
+        }
         return state;
     }
 
@@ -221,7 +237,7 @@ public class PaymentLink {
     }
 
     public boolean isPending() {
-        return this.state == PE;
+        return state == PE;
     }
 
     @Override
@@ -229,6 +245,7 @@ public class PaymentLink {
         return "PaymentLink{" +
                 "id=" + id +
                 ", token='" + token + '\'' +
+                ", description='" + description + '\'' +
                 ", amount=" + amount +
                 ", externalTxId='" + externalTxId + '\'' +
                 ", expiryDate=" + expiryDate +

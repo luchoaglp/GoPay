@@ -30,6 +30,10 @@ public class PaymentLinkService {
         return paymentLinkRepository.findByToken(token);
     }
 
+    public List<PaymentLink> getByClientId(Long clientId) {
+        return paymentLinkRepository.findByClientIdOrderByIdDesc(clientId);
+    }
+
     public void save(PaymentLink paymentLink) {
         paymentLinkRepository.save(paymentLink);
     }

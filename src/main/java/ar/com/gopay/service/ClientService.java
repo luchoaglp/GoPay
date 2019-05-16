@@ -13,6 +13,7 @@ public class ClientService {
     @Autowired
     private ClientRepository clientRepository;
 
+
     public List<Client> getAll() {
         return clientRepository.findAll();
     }
@@ -25,11 +26,24 @@ public class ClientService {
         return clientRepository.findById(id).get();
     }
 
-    public boolean existsByUsername(String username) {
-        return clientRepository.existsByUsername(username);
+    public boolean existsByEmail(String email) {
+        return clientRepository.existsByEmail(email);
     }
 
     public boolean existsByDni(String dni) {
         return clientRepository.existsByDni(dni);
     }
+
+    public void edit(Client client, Long clientId) {
+
+        Client entity = clientRepository.getOne(clientId);
+
+        entity.setFirstName(client.getFirstName());
+        entity.setLastName(client.getLastName());
+        entity.setDni(client.getDni());
+        entity.setPhone(client.getPhone());
+
+        save(entity);
+    }
+
 }

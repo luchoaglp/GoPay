@@ -8,10 +8,9 @@ import java.util.Optional;
 @Transactional
 public interface ClientRepository extends UserRepository<Client> {
 
-    @Override
-    Optional<Client> findByUsername(String username);
-
-    Boolean existsByUsername(String username);
+    Optional<Client> findByEmail(String email);
 
     Boolean existsByDni(String dni);
+
+    boolean existsByEmail(String email);
 }
