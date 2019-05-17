@@ -2,7 +2,6 @@ package ar.com.gopay.service;
 
 import ar.com.gopay.domain.Client;
 import ar.com.gopay.repository.ClientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,8 +9,11 @@ import java.util.List;
 @Service
 public class ClientService {
 
-    @Autowired
-    private ClientRepository clientRepository;
+    private final ClientRepository clientRepository;
+
+    public ClientService(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
+    }
 
 
     public List<Client> getAll() {
@@ -34,7 +36,7 @@ public class ClientService {
         return clientRepository.existsByDni(dni);
     }
 
-    public void edit(Client client, Long clientId) {
+    public void editData(Client client, Long clientId) {
 
         Client entity = clientRepository.getOne(clientId);
 
@@ -42,6 +44,15 @@ public class ClientService {
         entity.setLastName(client.getLastName());
         entity.setDni(client.getDni());
         entity.setPhone(client.getPhone());
+
+        save(entity);
+    }
+
+    public void editPassword(String password, Long clientId) {
+
+        Client entity = clientRepository.getOne(clientId);
+
+        entity.setPassword(password);
 
         save(entity);
     }

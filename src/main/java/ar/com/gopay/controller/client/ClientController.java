@@ -24,7 +24,6 @@ public class ClientController {
         this.passwordEncoder = passwordEncoder;
     }
 
-
     @GetMapping({"", "/home"})
     public String home() {
         return "home";
@@ -81,8 +80,6 @@ public class ClientController {
         }
 
         client.setPassword(passwordEncoder.encode(client.getPassword()));
-
-        clientService.save(client);
 
         return "signin";
     }

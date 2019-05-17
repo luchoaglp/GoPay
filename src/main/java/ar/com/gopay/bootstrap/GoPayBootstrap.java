@@ -23,7 +23,7 @@ import static ar.com.gopay.domain.PaymentLinkState.PE;
 import static ar.com.gopay.domain.nosis.NombreVariable.*;
 
 @Slf4j
-@Component
+//@Component
 public class GoPayBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
     @Value("${podios.username}")
