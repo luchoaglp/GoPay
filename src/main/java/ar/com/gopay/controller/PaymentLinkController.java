@@ -176,12 +176,12 @@ public class PaymentLinkController {
 
                         model.put("phone", client.getPhone());
                         model.put("smsError", true);
+                        model.put("smsLastState", paymentLink.getNosisSms().getSmsLastState());
 
                         return "payment/check";
                 }
 
             } else {
-
                 model.put("smsError", true);
             }
         }
@@ -290,6 +290,7 @@ public class PaymentLinkController {
 
             model.put("phone", client.getPhone());
             model.put("smsError", true);
+            model.put("smsLastState", paymentLink.getNosisSms().getSmsLastState());
 
             result.addError(new FieldError(
                     "sms",

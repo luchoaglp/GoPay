@@ -22,7 +22,7 @@ public class CustomAuthenticationSuccessHandler
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-        /*
+
         if (request.getParameter("action") != null) {
 
             if (request.getParameter("action").equals("pay")) {
@@ -33,7 +33,6 @@ public class CustomAuthenticationSuccessHandler
 
             response.sendRedirect("home");
         }
-        */
 
         handle(request, response, authentication);
         clearAuthenticationAttributes(request);

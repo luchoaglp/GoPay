@@ -10,11 +10,10 @@
 <div class="container">
 
     <div class="row mb-3">
-        <div class="col-4">
-            <div th:replace="common/sidebar :: account-sidebar"/>
-        </div>
 
-        <div class="col-8">
+        <div th:replace="common/sidebar :: account-sidebar"/>
+
+        <div class="col-9">
 
             <div class="card-deck">
                 <div class="card mb-4 shadow-sm">
@@ -30,6 +29,7 @@
                                 <th scope="col">Empresa</th>
                                 <th scope="col">Monto</th>
                                 <th scope="col">Cuotas</th>
+                                <th scope="col">Descripción</th>
                                 <th scope="col">Estado</th>
                                 <th></th>
                             </tr>
@@ -42,6 +42,7 @@
                                 <td>
                                     <span th:if="${paymentLink.feesQuantity != null}" th:text="${paymentLink.feesQuantity} + ' x $' + ${#numbers.formatDecimal(paymentLink.amount / paymentLink.feesQuantity, 0, 2, 'POINT')}"></span>
                                 </td>
+                                <td th:text="${paymentLink.description}"></td>
                                 <td th:text="${paymentLink.state}"></td>
                                 <td>
                                     <a th:if="${paymentLink.state == T(ar.com.gopay.domain.PaymentLinkState).PE}" th:href="@{/payment-link/} + ${paymentLink.id} + '/' + ${paymentLink.token}" class="btn btn-outline-primary btn-sm">Ir a...</a>

@@ -11,10 +11,10 @@
 <div class="container">
 
     <div class="row mb-3">
-        <div class="col-4">
-            <div th:replace="common/sidebar :: account-sidebar"/>
-        </div>
-        <div sec:authorize="isAuthenticated()" class="col-md-4">
+
+        <div th:replace="common/sidebar :: account-sidebar"/>
+
+        <div sec:authorize="isAuthenticated()" class="offset-md-1 col-md-4">
             <div class="card-deck">
                 <div class="card mb-6 shadow-sm">
                     <div class="card-header">
