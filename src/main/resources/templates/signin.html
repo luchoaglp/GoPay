@@ -18,7 +18,7 @@
                         <h4 class="my-0 font-weight-normal">Ingresá</h4>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/login} + (${param.action} ? '?action=' + ${param.action} : '')" method="post">
+                        <form th:action="@{/login}" method="post">
                             <div class="form-group">
                                 <label for="email">Email</label>
                                 <input type="email" class="form-control" name="username" id="email" minlength="6" maxlength="50" placeholder="Ingrese su Email" autofocus required>

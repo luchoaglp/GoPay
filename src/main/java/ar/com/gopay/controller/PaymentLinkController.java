@@ -72,6 +72,8 @@ public class PaymentLinkController {
             return "redirect:/payment-link/check";
         }
 
+        model.put("action", "pay");
+
         return "payment/link";
     }
 

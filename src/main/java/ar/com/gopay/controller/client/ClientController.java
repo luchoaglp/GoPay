@@ -81,6 +81,8 @@ public class ClientController {
 
         client.setPassword(passwordEncoder.encode(client.getPassword()));
 
+        clientService.save(client);
+
         return "signin";
     }
 

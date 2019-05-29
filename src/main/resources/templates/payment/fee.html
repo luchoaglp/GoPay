@@ -17,7 +17,7 @@
                         <h4 class="my-0 font-weight-normal" th:text="${paymentLink.company.name}"></h4>
                     </div>
                     <div class="card-body text-center">
-                        <img th:src="${paymentLink.company.logo}" class="img-fluid">
+                        <img th:src="@{${'/img/' + paymentLink.company.logo}}" class="img-fluid">
                         <hr>
                         <h2 class="card-title pricing-card-title">$<span th:text="${#numbers.formatDecimal(paymentLink.amount, 0, 0)}"></span></h2>
                         <ul class="list-unstyled mt-3 mb-4">
