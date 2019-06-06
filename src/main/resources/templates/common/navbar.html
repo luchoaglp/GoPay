@@ -16,6 +16,9 @@
             <li class="nav-item">
                 <a class="nav-link" th:href="@{/signin}">Ingresá</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/account/recovery/password}">Recupera tu clave</a>
+            </li>
         </ul>
         <ul sec:authorize="isAuthenticated()" class="navbar-nav">
             <li class="nav-item dropdown">

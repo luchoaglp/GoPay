@@ -1,12 +1,18 @@
 package ar.com.gopay.controller.client;
 
 import ar.com.gopay.domain.Client;
+import ar.com.gopay.security.RecoveryPasswordClient;
+import ar.com.gopay.security.RecoveryPasswordToken;
 import ar.com.gopay.security.UserPrincipal;
 import ar.com.gopay.service.ClientService;
+import ar.com.gopay.service.RecoveryPasswordTokenService;
+import ar.com.gopay.utility.MailConstructor;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -15,12 +21,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.*;
 import java.security.Principal;
 import java.util.Set;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/account")
@@ -28,10 +33,14 @@ public class AccountController {
 
     private final ClientService clientService;
     private final PasswordEncoder passwordEncoder;
+    private final RecoveryPasswordTokenService recoveryPasswordTokenService;
+    private final MailConstructor mailConstructor;
 
-    public AccountController(ClientService clientService, PasswordEncoder passwordEncoder) {
+    public AccountController(ClientService clientService, PasswordEncoder passwordEncoder, RecoveryPasswordTokenService recoveryPasswordClientService, RecoveryPasswordTokenService recoveryPasswordTokenService, MailConstructor mailConstructor) {
         this.clientService = clientService;
         this.passwordEncoder = passwordEncoder;
+        this.recoveryPasswordTokenService = recoveryPasswordTokenService;
+        this.mailConstructor = mailConstructor;
     }
 
     @GetMapping
@@ -150,6 +159,67 @@ public class AccountController {
         clientService.editPassword(passwordEncoder.encode(password1), user.getId());
 
         return "redirect:/logout";
+    }
+
+    @GetMapping("/recovery/password")
+    public String recoveryPassword(Model model,
+                                   Principal principal) {
+
+        // If user is in session
+        if(principal != null) {
+            return "redirect:/home";
+        }
+
+        model.addAttribute("recoveryPasswordClient", new RecoveryPasswordClient());
+
+        return "account/recovery/password";
+    }
+
+    @PostMapping("/recovery/password")
+    public String recoveryPassword(@Valid RecoveryPasswordClient recoveryPasswordClient,
+                                   BindingResult result,
+                                   HttpServletRequest request,
+                                   Model model /* Dev */) {
+
+        if(result.hasErrors()) {
+            return "account/recovery/password";
+        }
+
+        Client client = clientService.getByEmail(recoveryPasswordClient.getEmail());
+
+        if(client == null) {
+
+            result.addError(new FieldError(
+                    "recoveryPasswordClient",
+                    "email",
+                    "El email no se encuentra registrado"
+            ));
+
+            return "account/recovery/password";
+        }
+
+        String token = UUID.randomUUID().toString();
+
+        recoveryPasswordClient.setEmail(recoveryPasswordClient.getEmail().trim());
+
+        RecoveryPasswordToken recoveryPasswordToken = new RecoveryPasswordToken(token);
+        recoveryPasswordToken.setSignUpClient(recoveryPasswordClient);
+
+        System.out.println(recoveryPasswordClient);
+        System.out.println(recoveryPasswordToken);
+
+        recoveryPasswordTokenService.save(recoveryPasswordToken);
+
+        String appUrl = "http://" + request.getServerName() +
+                ":" + request.getServerPort() + request.getContextPath();
+
+        SimpleMailMessage smm = mailConstructor.constructSignUpTokenEmail(appUrl,
+                request.getLocale(),
+                token, recoveryPasswordClient);
+
+        System.out.println(smm);
+
+        return "redirect:/";
     }
 
 }

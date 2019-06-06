@@ -26,7 +26,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/payment-link/**",
             "/home", "/signin", "/signup",
             "/fee", // Only for development
-            "/clients" // Only for development
+            "/clients", // Only for development
+            "/account/recovery/password"
             //h2-console/**"
     };
 

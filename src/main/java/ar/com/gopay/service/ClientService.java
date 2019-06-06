@@ -28,6 +28,10 @@ public class ClientService {
         return clientRepository.findById(id).get();
     }
 
+    public Client getByEmail(String email) {
+        return clientRepository.findByEmail(email).orElse(null);
+    }
+
     public boolean existsByEmail(String email) {
         return clientRepository.existsByEmail(email);
     }
