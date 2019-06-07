@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="common/header :: common-header"/>
+
+<body>
+
+<nav th:replace="common/navbar :: navbar"/>
+
+<div class="container">
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="card-deck">
+                <div class="card text-white bg-danger mb-4 shadow-sm">
+                    <div class="card-header">
+                        <h5 class="my-0 font-weight-normal" th:text="${error}"></h5>
+                    </div>
+                    <div class="card-body">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="common/footer :: footer"/>
+
+</div>
+
+<div th:replace="common/bottom :: body-bottom-scripts"/>
+
+</body>
+</html>

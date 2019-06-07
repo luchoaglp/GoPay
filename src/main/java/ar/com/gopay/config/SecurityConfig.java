@@ -27,7 +27,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/home", "/signin", "/signup",
             "/fee", // Only for development
             "/clients", // Only for development
-            "/account/recovery/password"
+            "/account/recovery/password",
+            "/account/recovery/edit/password/**"
             //h2-console/**"
     };
 

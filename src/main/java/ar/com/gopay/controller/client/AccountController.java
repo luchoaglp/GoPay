@@ -1,6 +1,7 @@
 package ar.com.gopay.controller.client;
 
 import ar.com.gopay.domain.Client;
+import ar.com.gopay.exception.RecoveryPasswordException;
 import ar.com.gopay.security.RecoveryPasswordClient;
 import ar.com.gopay.security.RecoveryPasswordToken;
 import ar.com.gopay.security.UserPrincipal;
@@ -16,10 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.*;
@@ -178,8 +176,7 @@ public class AccountController {
     @PostMapping("/recovery/password")
     public String recoveryPassword(@Valid RecoveryPasswordClient recoveryPasswordClient,
                                    BindingResult result,
-                                   HttpServletRequest request,
-                                   Model model /* Dev */) {
+                                   HttpServletRequest request) {
 
         if(result.hasErrors()) {
             return "account/recovery/password";
@@ -202,10 +199,10 @@ public class AccountController {
 
         recoveryPasswordClient.setEmail(recoveryPasswordClient.getEmail().trim());
 
-        RecoveryPasswordToken recoveryPasswordToken = new RecoveryPasswordToken(token);
+        RecoveryPasswordToken recoveryPasswordToken = new RecoveryPasswordToken(token, client);
         recoveryPasswordToken.setSignUpClient(recoveryPasswordClient);
 
-        System.out.println(recoveryPasswordClient);
+        //System.out.println(recoveryPasswordClient);
         System.out.println(recoveryPasswordToken);
 
         recoveryPasswordTokenService.save(recoveryPasswordToken);
@@ -218,6 +215,64 @@ public class AccountController {
                 token, recoveryPasswordClient);
 
         System.out.println(smm);
+
+        return "redirect:/";
+    }
+
+    @GetMapping("/recovery/edit/password/{token}")
+    public String recoveryEditPassword(@PathVariable("token") String token,
+                                       Model model) {
+
+        RecoveryPasswordToken recoveryPasswordToken = recoveryPasswordTokenService.findByToken(token);
+
+        if(recoveryPasswordToken == null) {
+            throw new RecoveryPasswordException("Token inválido");
+        }
+
+        model.addAttribute("token", recoveryPasswordToken);
+
+        return "account/recovery/edit/password";
+    }
+
+    @PostMapping("/recovery/edit/password")
+    public String recoveryEditPassword(@RequestParam(name = "password1") String password1,
+                                       @RequestParam(name = "password2") String password2,
+                                       @RequestParam(name = "tokenId") Long tokenId,
+                                       @RequestParam(name = "token") String token,
+                                       ModelMap model) {
+
+        RecoveryPasswordToken recoveryPasswordToken = recoveryPasswordTokenService.findById(tokenId);
+
+        if(recoveryPasswordToken == null ||
+                !recoveryPasswordToken.getToken().equals(token)) {
+            throw new RecoveryPasswordException("Token inválido");
+        }
+
+        if(recoveryPasswordToken.isTokenExpired()) {
+            throw new RecoveryPasswordException("Token expirado");
+        }
+
+        if(password1.length() < 6) {
+            model.addAttribute("token", recoveryPasswordToken);
+            model.put("errPass1", "La clave debe al menos contener 6 caracteres.");
+
+            return "account/recovery/edit/password";
+        }
+
+        if(!password1.equals(password2)) {
+            model.addAttribute("token", recoveryPasswordToken);
+            model.put("errPass2", "Las claves no coinciden.");
+
+            return "account/recovery/edit/password";
+        }
+
+        Client client = clientService.getById(recoveryPasswordToken.getClient().getId());
+
+        if(client == null) {
+            throw new RecoveryPasswordException("Cliente inválido");
+        }
+
+        clientService.editPassword(passwordEncoder.encode(password1), client.getId());
 
         return "redirect:/";
     }

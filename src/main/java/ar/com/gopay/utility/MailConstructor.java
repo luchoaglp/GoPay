@@ -22,7 +22,7 @@ public class MailConstructor {
                                                        String token,
                                                        RecoveryPasswordClient recoveryPasswordClient) {
 
-        String url = contextPath + "/register/" + token;
+        String url = contextPath + "/account/recovery/edit/password/" + token;
         //String message = "\nPlease click on this link to verify your email and edit your personal information. ";
 
         SimpleMailMessage email = new SimpleMailMessage();

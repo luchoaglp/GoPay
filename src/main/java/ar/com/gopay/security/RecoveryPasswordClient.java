@@ -27,7 +27,7 @@ public class RecoveryPasswordClient {
     private String email;
 
     @OneToOne
-    private RecoveryPasswordToken signUpToken;
+    private RecoveryPasswordToken recoveryPasswordToken;
 
     public RecoveryPasswordClient(String email) {
         this.email = email;

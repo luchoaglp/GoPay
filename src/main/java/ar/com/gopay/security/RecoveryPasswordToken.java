@@ -1,5 +1,6 @@
 package ar.com.gopay.security;
 
+import ar.com.gopay.domain.Client;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,11 +29,20 @@ public class RecoveryPasswordToken {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private RecoveryPasswordClient recoveryPasswordClient;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private Client client;
+
     @Transient
     private boolean tokenExpired;
 
     public RecoveryPasswordToken(String token) {
         this.token = token;
+        this.expiryDate = calculateExpiryDate();
+    }
+
+    public RecoveryPasswordToken(String token, Client client) {
+        this.token = token;
+        this.client = client;
         this.expiryDate = calculateExpiryDate();
     }
 
@@ -51,7 +61,7 @@ public class RecoveryPasswordToken {
 
     public void setSignUpClient(RecoveryPasswordClient recoveryPasswordClient) {
         this.recoveryPasswordClient = recoveryPasswordClient;
-        recoveryPasswordClient.setSignUpToken(this);
+        recoveryPasswordClient.setRecoveryPasswordToken(this);
     }
 
     @Override

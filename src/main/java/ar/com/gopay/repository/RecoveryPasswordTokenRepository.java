@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RecoveryPasswordTokenRepository extends JpaRepository<RecoveryPasswordToken, Long> {
 
+    RecoveryPasswordToken findByToken(String token);
+
 }

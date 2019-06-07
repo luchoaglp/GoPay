@@ -137,7 +137,6 @@ public class PaymentLinkController {
             clientService.save(client);
 
             if(paymentLink.getState().equals(RE)) {
-
                 throw new PaymentLinkException("Transacción rechazada");
             }
 
@@ -364,19 +363,12 @@ public class PaymentLinkController {
     private void validatePaymentLink(PaymentLink paymentLink, String token) {
 
         if(paymentLink == null){
-
             throw new PaymentLinkException("Token inválido");
-
         } else if(!paymentLink.getToken().equals(token)) {
-
             throw new PaymentLinkException("Token inválido");
-
         } else if(!paymentLink.isPending()) {
-
             throw new PaymentLinkException("Token inválido");
-
         } else if(paymentLink.isTokenExpired()) {
-
             throw new PaymentLinkException("El token ha expirado");
         }
     }

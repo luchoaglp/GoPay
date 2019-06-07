@@ -16,4 +16,12 @@ public class RecoveryPasswordTokenService {
     public RecoveryPasswordToken save(RecoveryPasswordToken recoveryPasswordToken) {
         return recoveryPasswordTokenRepository.save(recoveryPasswordToken);
     }
+
+    public RecoveryPasswordToken findByToken(String token) {
+        return recoveryPasswordTokenRepository.findByToken(token);
+    }
+
+    public RecoveryPasswordToken findById(Long tokenId) {
+        return recoveryPasswordTokenRepository.findById(tokenId).orElse(null);
+    }
 }
