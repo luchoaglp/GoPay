@@ -137,7 +137,7 @@ public class PaymentLinkController {
             clientService.save(client);
 
             if(paymentLink.getState().equals(RE)) {
-                throw new PaymentLinkException("Transacción rechazada");
+                throw new PaymentLinkException("La transacción ha sido rechazada");
             }
 
             // If the SMS has not been sent

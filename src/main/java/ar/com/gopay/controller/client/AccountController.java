@@ -9,6 +9,7 @@ import ar.com.gopay.service.ClientService;
 import ar.com.gopay.service.RecoveryPasswordTokenService;
 import ar.com.gopay.utility.MailConstructor;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,12 +34,14 @@ public class AccountController {
     private final PasswordEncoder passwordEncoder;
     private final RecoveryPasswordTokenService recoveryPasswordTokenService;
     private final MailConstructor mailConstructor;
+    private final JavaMailSender emailSender;
 
-    public AccountController(ClientService clientService, PasswordEncoder passwordEncoder, RecoveryPasswordTokenService recoveryPasswordClientService, RecoveryPasswordTokenService recoveryPasswordTokenService, MailConstructor mailConstructor) {
+    public AccountController(ClientService clientService, PasswordEncoder passwordEncoder, RecoveryPasswordTokenService recoveryPasswordClientService, RecoveryPasswordTokenService recoveryPasswordTokenService, MailConstructor mailConstructor, JavaMailSender emailSender) {
         this.clientService = clientService;
         this.passwordEncoder = passwordEncoder;
         this.recoveryPasswordTokenService = recoveryPasswordTokenService;
         this.mailConstructor = mailConstructor;
+        this.emailSender = emailSender;
     }
 
     @GetMapping
@@ -213,6 +216,8 @@ public class AccountController {
         SimpleMailMessage smm = mailConstructor.constructSignUpTokenEmail(appUrl,
                 request.getLocale(),
                 token, recoveryPasswordClient);
+
+        emailSender.send(smm);
 
         System.out.println(smm);
 
